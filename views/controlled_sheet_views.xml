@@ -10,6 +10,7 @@
                 <field name="owner_id"/>
                 <field name="compliance_score"/>
                 <field name="next_review_date"/>
+                        <field name="use_chatter_audit"/>
             </tree>
         </field>
     </record>
@@ -51,8 +52,8 @@
             <form>
                 <header>
                     <button name="action_open_onboarding" type="object" string="Asistente de uso" class="btn-primary"/>
-                    <button name="action_under_assessment" type="object" string="Under assessment" states="draft"/>
-                    <button name="action_approved_for_use" type="object" string="Approve for use" states="under_assessment"/>
+                    <button name="action_under_assessment" type="object" string="En evaluación" states="draft"/>
+                    <button name="action_approved_for_use" type="object" string="Aprobar para uso" states="under_assessment"/>
                     <field name="status" widget="statusbar" statusbar_visible="draft,under_assessment,approved_for_use,retired"/>
                 </header>
                 <sheet>
@@ -67,6 +68,7 @@
                         <field name="compliance_score" readonly="1"/>
                         <field name="periodic_review_frequency_months"/>
                         <field name="next_review_date"/>
+                        <field name="use_chatter_audit"/>
                     </group>
                     <notebook>
                         <page string="Canvas GxP">
@@ -80,16 +82,20 @@
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
     </record>
 
     <record id="action_gxp_controlled_sheet" model="ir.actions.act_window">
-        <field name="name">Controlled Sheets</field>
+        <field name="name">Hojas controladas</field>
         <field name="res_model">gxp.controlled.sheet</field>
         <field name="view_mode">kanban,tree,form</field>
     </record>
 
     <menuitem id="menu_gxp_root" name="GxP Spreadsheet Control"/>
-    <menuitem id="menu_gxp_sheet" name="Controlled Sheets" parent="menu_gxp_root" action="action_gxp_controlled_sheet"/>
+    <menuitem id="menu_gxp_sheet" name="Hojas controladas" parent="menu_gxp_root" action="action_gxp_controlled_sheet"/>
 </odoo>

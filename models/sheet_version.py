@@ -42,6 +42,7 @@ class GxpSheetVersion(models.Model):
     reviewed_at = fields.Datetime()
     approved_at = fields.Datetime()
     signature_ids = fields.One2many('gxp.signature.event', 'version_id')
+    use_chatter_audit = fields.Boolean(related='sheet_id.use_chatter_audit', readonly=True)
 
     _sql_constraints = [
         ('version_unique', 'unique(sheet_id, version_major, version_minor)', 'Version numbers must be unique per sheet.'),

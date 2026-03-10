@@ -113,3 +113,17 @@ class TestGxpSpreadsheetControl(SavepointCase):
         self.assertGreaterEqual(sheet.compliance_score, 0)
         action = sheet.action_open_onboarding()
         self.assertEqual(action.get('res_model'), 'gxp.onboarding.wizard')
+
+
+    def test_audit_is_reflected_in_chatter_when_enabled(self):
+        sheet = self._create_sheet()
+        initial = len(sheet.message_ids)
+        sheet.write({'name': 'Balance calculation v2'})
+        self.assertGreater(len(sheet.message_ids), initial)
+
+    def test_audit_not_posted_in_chatter_when_disabled(self):
+        sheet = self._create_sheet()
+        sheet.write({'use_chatter_audit': False})
+        initial = len(sheet.message_ids)
+        sheet.write({'name': 'Balance calculation v3'})
+        self.assertEqual(len(sheet.message_ids), initial)

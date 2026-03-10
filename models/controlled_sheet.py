@@ -33,6 +33,7 @@ class GxpControlledSheet(models.Model):
     next_review_date = fields.Date()
     folder_path = fields.Char()
     notes = fields.Text()
+    use_chatter_audit = fields.Boolean(default=True, string='Publicar auditoría en mensajería')
     version_ids = fields.One2many('gxp.sheet.version', 'sheet_id')
 
     compliance_score = fields.Integer(compute='_compute_visual_helpers', string='Score de cumplimiento')

@@ -21,7 +21,7 @@ class GxpOnboardingWizard(models.TransientModel):
             'registro': _('<h3>1) Alta de hoja controlada</h3><ul><li>Crea la ficha maestra.</li><li>Define intended use e impacto GxP.</li><li>Configura revisión periódica.</li></ul>'),
             'versionado': _('<h3>2) Carga de versión</h3><ul><li>Sube Excel original.</li><li>Verifica hash SHA-256.</li><li>No sobrescribas versiones efectivas.</li></ul>'),
             'firma': _('<h3>3) Firma electrónica</h3><ul><li>Reautenticación obligatoria.</li><li>Firma de revisión y aprobación.</li><li>El hash firmado queda enlazado.</li></ul>'),
-            'auditoria': _('<h3>4) Auditoría</h3><ul><li>Revisa eventos por usuario/IP.</li><li>Valida cambios de estado y descargas.</li><li>Exporta evidencia para inspección.</li></ul>'),
+            'auditoria': _('<h3>4) Auditoría</h3><ul><li>Revisa eventos por usuario/IP.</li><li>Valida cambios de estado y descargas.</li><li>Consulta la pestaña Mensajería para trazabilidad legible en contexto.</li><li>Exporta evidencia para inspección.</li></ul>'),
             'cierre': _('<h3>Checklist MVP ✅</h3><p>Hoja + versión + firmas + auditoría + control de cambios + revisión periódica.</p>'),
         }
         for wizard in self:

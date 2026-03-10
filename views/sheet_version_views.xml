@@ -18,9 +18,9 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_submit_review" type="object" string="Send to review" states="draft"/>
-                    <button name="action_to_pending_approval" type="object" string="To pending approval" states="in_review"/>
-                    <button name="action_make_effective" type="object" string="Make effective" states="pending_approval"/>
+                    <button name="action_submit_review" type="object" string="Enviar a revisión" states="draft"/>
+                    <button name="action_to_pending_approval" type="object" string="A aprobación" states="in_review"/>
+                    <button name="action_make_effective" type="object" string="Hacer vigente" states="pending_approval"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,in_review,pending_approval,effective,superseded,retired,cancelled"/>
                 </header>
                 <sheet>
@@ -34,16 +34,21 @@
                         <field name="file_sha256" readonly="1"/>
                         <field name="change_summary"/>
                         <field name="is_locked" readonly="1"/>
+                        <field name="use_chatter_audit" readonly="1"/>
                     </group>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
     </record>
 
     <record id="action_gxp_sheet_version" model="ir.actions.act_window">
-        <field name="name">Sheet Versions</field>
+        <field name="name">Versiones de hoja</field>
         <field name="res_model">gxp.sheet.version</field>
         <field name="view_mode">tree,form</field>
     </record>
-    <menuitem id="menu_gxp_version" name="Versions" parent="menu_gxp_root" action="action_gxp_sheet_version"/>
+    <menuitem id="menu_gxp_version" name="Versiones" parent="menu_gxp_root" action="action_gxp_sheet_version"/>
 </odoo>
