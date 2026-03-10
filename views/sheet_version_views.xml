@@ -1,0 +1,49 @@
+<odoo>
+    <record id="view_gxp_sheet_version_tree" model="ir.ui.view">
+        <field name="name">gxp.sheet.version.tree</field>
+        <field name="model">gxp.sheet.version</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sheet_id"/>
+                <field name="version_label"/>
+                <field name="state"/>
+                <field name="file_sha256"/>
+                <field name="is_locked"/>
+            </tree>
+        </field>
+    </record>
+    <record id="view_gxp_sheet_version_form" model="ir.ui.view">
+        <field name="name">gxp.sheet.version.form</field>
+        <field name="model">gxp.sheet.version</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_submit_review" type="object" string="Send to review" states="draft"/>
+                    <button name="action_to_pending_approval" type="object" string="To pending approval" states="in_review"/>
+                    <button name="action_make_effective" type="object" string="Make effective" states="pending_approval"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,in_review,pending_approval,effective,superseded,retired,cancelled"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="sheet_id"/>
+                        <field name="version_major"/>
+                        <field name="version_minor"/>
+                        <field name="version_label" readonly="1"/>
+                        <field name="file_name"/>
+                        <field name="file_binary" filename="file_name"/>
+                        <field name="file_sha256" readonly="1"/>
+                        <field name="change_summary"/>
+                        <field name="is_locked" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_gxp_sheet_version" model="ir.actions.act_window">
+        <field name="name">Sheet Versions</field>
+        <field name="res_model">gxp.sheet.version</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="menu_gxp_version" name="Versions" parent="menu_gxp_root" action="action_gxp_sheet_version"/>
+</odoo>

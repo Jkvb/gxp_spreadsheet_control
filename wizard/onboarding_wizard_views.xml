@@ -1,0 +1,28 @@
+<odoo>
+    <record id="view_gxp_onboarding_wizard_form" model="ir.ui.view">
+        <field name="name">gxp.onboarding.wizard.form</field>
+        <field name="model">gxp.onboarding.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Asistente GxP">
+                <group>
+                    <field name="step"/>
+                    <field name="guide_html" widget="html" readonly="1"/>
+                </group>
+                <footer>
+                    <button name="action_prev" type="object" string="Anterior"/>
+                    <button name="action_next" type="object" string="Siguiente" class="btn-primary"/>
+                    <button string="Cerrar" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_gxp_onboarding_wizard" model="ir.actions.act_window">
+        <field name="name">Asistente de uso</field>
+        <field name="res_model">gxp.onboarding.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_gxp_onboarding" name="Asistente" parent="menu_gxp_root" action="action_gxp_onboarding_wizard"/>
+</odoo>

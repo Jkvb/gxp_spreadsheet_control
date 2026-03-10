@@ -1,0 +1,14 @@
+<odoo>
+    <record id="seq_gxp_controlled_sheet" model="ir.sequence">
+        <field name="name">Controlled Sheet</field>
+        <field name="code">gxp.controlled.sheet</field>
+        <field name="prefix">SHT-</field>
+        <field name="padding">5</field>
+    </record>
+    <record id="seq_gxp_change_control" model="ir.sequence">
+        <field name="name">Change Control</field>
+        <field name="code">gxp.change.control</field>
+        <field name="prefix">CC-</field>
+        <field name="padding">5</field>
+    </record>
+</odoo>

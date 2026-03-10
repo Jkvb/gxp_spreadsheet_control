@@ -1,0 +1,20 @@
+<odoo>
+    <record id="view_gxp_validation_package_tree" model="ir.ui.view">
+        <field name="name">gxp.validation.package.tree</field>
+        <field name="model">gxp.validation.package</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="sheet_id"/>
+                <field name="version_id"/>
+                <field name="validation_state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="action_gxp_validation" model="ir.actions.act_window">
+        <field name="name">Validation Packages</field>
+        <field name="res_model">gxp.validation.package</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="menu_gxp_validation" name="Validation" parent="menu_gxp_root" action="action_gxp_validation"/>
+</odoo>

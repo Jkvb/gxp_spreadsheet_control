@@ -1,0 +1,12 @@
+<odoo>
+    <record id="ir_cron_gxp_periodic_review" model="ir.cron">
+        <field name="name">GxP Periodic Review Scheduler</field>
+        <field name="model_id" ref="model_gxp_periodic_review"/>
+        <field name="state">code</field>
+        <field name="code">model.cron_generate_due_reviews()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+        <field name="active">True</field>
+    </record>
+</odoo>
