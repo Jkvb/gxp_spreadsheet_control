@@ -95,6 +95,6 @@
         <field name="view_mode">kanban,tree,form</field>
     </record>
 
-    <menuitem id="menu_gxp_root" name="GxP Spreadsheet Control"/>
+    <menuitem id="menu_gxp_root" name="Control Hojas calculo"/>
     <menuitem id="menu_gxp_sheet" name="Hojas controladas" parent="menu_gxp_root" action="action_gxp_controlled_sheet"/>
 </odoo>
