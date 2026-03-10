@@ -107,12 +107,10 @@ class TestGxpSpreadsheetControl(SavepointCase):
         self.assertTrue(events)
 
 
-    def test_visual_helpers_and_onboarding_action(self):
+    def test_visual_helpers_render(self):
         sheet = self._create_sheet()
         self.assertTrue(sheet.canvas_html)
         self.assertGreaterEqual(sheet.compliance_score, 0)
-        action = sheet.action_open_onboarding()
-        self.assertEqual(action.get('res_model'), 'gxp.onboarding.wizard')
 
 
     def test_audit_is_reflected_in_chatter_when_enabled(self):

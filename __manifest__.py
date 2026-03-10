@@ -19,7 +19,6 @@
         'views/audit_views.xml',
         'views/assets.xml',
         'wizard/sign_wizard_views.xml',
-        'wizard/onboarding_wizard_views.xml',
     ],
     'installable': True,
     'application': True,
