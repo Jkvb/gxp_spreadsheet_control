@@ -2,7 +2,7 @@ import base64
 import hashlib
 
 from odoo import api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import AccessError, UserError
 
 
 class GxpSheetVersion(models.Model):
@@ -61,6 +61,9 @@ class GxpSheetVersion(models.Model):
         return rec
 
     def write(self, vals):
+        if self.env.context.get('gxp_force_write'):
+            vals = self._prepare_hash_vals(vals)
+            return super().write(vals)
         for rec in self:
             if rec.is_locked or rec.state in ('effective', 'superseded', 'retired'):
                 raise UserError('Effective or signed versions are immutable. Create a new version instead.')
@@ -87,7 +90,64 @@ class GxpSheetVersion(models.Model):
         self.ensure_one()
         return bool(self.signature_ids.filtered(lambda s: s.sign_meaning == meaning and s.is_valid))
 
+
+    def _require_group(self, xmlid, error_message):
+        if self.env.user.has_group('gxp_spreadsheet_control.group_gxp_role_admin') or self.env.user.has_group('base.group_system'):
+            return
+        if not self.env.user.has_group(xmlid):
+            self._gxp_log_event('permission_denied', reason=error_message)
+            raise AccessError(error_message)
+
+    def _check_change_control_gate(self):
+        self.ensure_one()
+        has_prev_effective = bool(self.sheet_id.version_ids.filtered(lambda v: v.state == 'effective' and v.id != self.id))
+        if not has_prev_effective:
+            return
+        cc = self.env['gxp.change.control'].search([
+            ('sheet_id', '=', self.sheet_id.id),
+            ('linked_new_version_id', '=', self.id),
+            ('approval_state', '=', 'closed'),
+        ], limit=1)
+        if not cc:
+            raise UserError('Se requiere Change Control cerrado y vinculado para sustituir una versión vigente.')
+
+    def action_open_sign_wizard_review(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Firma de revisión',
+            'res_model': 'gxp.sign.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_sign_meaning': 'review',
+                'default_res_model': self._name,
+                'default_res_id': self.id,
+                'default_version_id': self.id,
+            }
+        }
+
+    def action_open_sign_wizard_approval(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Firma de aprobación',
+            'res_model': 'gxp.sign.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_sign_meaning': 'approval',
+                'default_res_model': self._name,
+                'default_res_id': self.id,
+                'default_version_id': self.id,
+            }
+        }
+
     def action_submit_review(self):
+        for rec in self:
+            if not rec.file_binary:
+                raise UserError('Debe cargar archivo antes de enviar a revisión.')
+            rec._require_group('gxp_spreadsheet_control.group_gxp_role_author', 'Solo Author/Admin puede enviar a revisión.')
         self.write({'state': 'in_review'})
         self._gxp_log_event('state_change', reason='Submitted for review')
 
@@ -99,6 +159,7 @@ class GxpSheetVersion(models.Model):
 
     def action_to_pending_approval(self):
         for rec in self:
+            rec._require_group('gxp_spreadsheet_control.group_gxp_role_reviewer', 'Solo Reviewer/Admin puede pasar a aprobación.')
             if not rec._has_valid_signature('review'):
                 raise UserError('Review signature is required before approval step.')
         self.write({'state': 'pending_approval'})
@@ -106,21 +167,24 @@ class GxpSheetVersion(models.Model):
 
     def action_make_effective(self):
         for rec in self:
+            rec._require_group('gxp_spreadsheet_control.group_gxp_role_approver', 'Solo Approver/Admin puede hacer vigente una versión.')
             if not rec._has_valid_signature('approval'):
                 raise UserError('Approval signature is required.')
+            rec._check_change_control_gate()
             if rec.sheet_id.version_ids.filtered(lambda v: v.state == 'effective' and v.id != rec.id):
                 prev = rec.sheet_id.version_ids.filtered(lambda v: v.state == 'effective' and v.id != rec.id)
-                prev.write({'state': 'superseded', 'superseded_by_id': rec.id, 'is_locked': True})
-            rec.write({'state': 'effective', 'effective_date': fields.Datetime.now(), 'is_locked': True})
+                prev.with_context(gxp_force_write=True).write({'state': 'superseded', 'superseded_by_id': rec.id, 'is_locked': True})
+            rec.with_context(gxp_force_write=True).write({'state': 'effective', 'effective_date': fields.Datetime.now(), 'is_locked': True})
             rec.sheet_id.write({'current_version_id': rec.id, 'status': 'approved_for_use'})
             rec._gxp_log_event('state_change', reason='Version made effective')
 
     def action_retire(self, reason):
+        self._require_group('gxp_spreadsheet_control.group_gxp_role_approver', 'Solo Approver/Admin puede retirar una versión.')
         if not reason:
             raise UserError('Retirement reason is mandatory.')
         if not self._has_valid_signature('retirement'):
             raise UserError('Retirement signature required.')
-        self.write({'state': 'retired', 'is_locked': True})
+        self.with_context(gxp_force_write=True).write({'state': 'retired', 'is_locked': True})
         self._gxp_log_event('archive', reason=reason)
 
     def action_download_controlled(self):

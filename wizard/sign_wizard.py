@@ -30,6 +30,21 @@ class GxpSignWizard(models.TransientModel):
             res['file_hash'] = version.file_sha256
         return res
 
+    def _validate_role_by_meaning(self):
+        self.ensure_one()
+        if self.sign_meaning == 'review' and not (
+            self.env.user.has_group('gxp_spreadsheet_control.group_gxp_role_reviewer')
+            or self.env.user.has_group('gxp_spreadsheet_control.group_gxp_role_admin')
+            or self.env.user.has_group('base.group_system')
+        ):
+            raise UserError('Solo Reviewer/Admin puede firmar revisión.')
+        if self.sign_meaning in ('approval', 'retirement') and not (
+            self.env.user.has_group('gxp_spreadsheet_control.group_gxp_role_approver')
+            or self.env.user.has_group('gxp_spreadsheet_control.group_gxp_role_admin')
+            or self.env.user.has_group('base.group_system')
+        ):
+            raise UserError('Solo Approver/Admin puede firmar aprobación o retiro.')
+
     def _validate_signature(self):
         self.ensure_one()
         try:
@@ -37,10 +52,13 @@ class GxpSignWizard(models.TransientModel):
         except AccessDenied:
             self.version_id._gxp_log_event('login_fail', reason='Failed signature re-authentication')
             raise UserError('Invalid password for signature re-authentication.')
+        self._validate_role_by_meaning()
         if self.sign_meaning in ('approval', 'retirement') and not self.comment:
             raise UserError('Comment is mandatory for this signature meaning.')
         if self.user_id == self.version_id.created_by and self.sign_meaning == 'approval':
             raise UserError('Author cannot self-approve.')
+        if self.version_id.state == 'effective':
+            raise UserError('No puede firmar una versión ya vigente.')
 
     def action_sign(self):
         self.ensure_one()
@@ -60,6 +78,6 @@ class GxpSignWizard(models.TransientModel):
         if self.sign_meaning == 'review':
             self.version_id.write({'reviewed_by': self.user_id.id, 'reviewed_at': now})
         if self.sign_meaning == 'approval':
-            self.version_id.write({'approved_by': self.user_id.id, 'approved_at': now, 'is_locked': True})
+            self.version_id.write({'approved_by': self.user_id.id, 'approved_at': now})
         self.version_id._gxp_log_event('sign', reason=self.sign_meaning, linked_signature_id=signature.id)
         return {'type': 'ir.actions.act_window_close'}

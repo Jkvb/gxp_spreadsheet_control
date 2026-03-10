@@ -127,3 +127,53 @@ class TestGxpSpreadsheetControl(SavepointCase):
         initial = len(sheet.message_ids)
         sheet.write({'name': 'Balance calculation v3'})
         self.assertEqual(len(sheet.message_ids), initial)
+
+
+    def test_make_effective_requires_closed_change_control_for_new_revision(self):
+        sheet = self._create_sheet()
+        version1, _ = self._create_version(sheet)
+        self.env['gxp.signature.event'].create({
+            'res_model': 'gxp.sheet.version',
+            'res_id': version1.id,
+            'version_id': version1.id,
+            'signer_id': self.env.user.id,
+            'signer_name_snapshot': self.env.user.name,
+            'sign_meaning': 'approval',
+            'record_sha256_at_sign': version1.file_sha256,
+        })
+        version1.action_make_effective()
+
+        version2 = self.version_model.create({
+            'sheet_id': sheet.id,
+            'version_major': 1,
+            'version_minor': 1,
+            'file_name': 'sheet2.xlsx',
+            'file_binary': base64.b64encode(b'new payload'),
+            'change_summary': 'Revision',
+        })
+        self.env['gxp.signature.event'].create({
+            'res_model': 'gxp.sheet.version',
+            'res_id': version2.id,
+            'version_id': version2.id,
+            'signer_id': self.env.user.id,
+            'signer_name_snapshot': self.env.user.name,
+            'sign_meaning': 'approval',
+            'record_sha256_at_sign': version2.file_sha256,
+        })
+        with self.assertRaises(UserError):
+            version2.action_make_effective()
+
+    def test_approval_signature_does_not_lock_before_effective(self):
+        sheet = self._create_sheet()
+        version, _ = self._create_version(sheet)
+        wizard = self.sign_wizard_model.create({
+            'password': 'admin',
+            'sign_meaning': 'approval',
+            'comment': 'ok',
+            'res_model': 'gxp.sheet.version',
+            'res_id': version.id,
+            'version_id': version.id,
+            'file_hash': version.file_sha256,
+        })
+        wizard.action_sign()
+        self.assertFalse(version.is_locked)
