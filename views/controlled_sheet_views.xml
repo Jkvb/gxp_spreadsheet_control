@@ -51,6 +51,7 @@
         <field name="arch" type="xml">
             <form>
                 <header>
+                    <button name="action_open_onboarding" type="object" string="Asistente de uso" class="btn-primary"/>
                     <button name="action_under_assessment" type="object" string="En evaluación" states="draft"/>
                     <button name="action_approved_for_use" type="object" string="Aprobar para uso" states="under_assessment"/>
                     <field name="status" widget="statusbar" statusbar_visible="draft,under_assessment,approved_for_use,retired"/>
