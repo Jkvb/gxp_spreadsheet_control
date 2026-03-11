@@ -14,12 +14,12 @@ class GxpControlledSheet(models.Model):
     active = fields.Boolean(default=True)
     company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.user.company_id)
     owner_id = fields.Many2one('res.users', required=True, default=lambda self: self.env.user)
-    business_process = fields.Char()
+    business_process_id = fields.Many2one('gxp.catalog.business.process', string='Proceso de negocio')
     intended_use = fields.Text(required=True)
-    predicate_rule_reference = fields.Char()
+    predicate_rule_id = fields.Many2one('gxp.catalog.predicate.rule', string='Predicate rule')
     gxp_impact = fields.Selection([('none', 'None'), ('low', 'Low'), ('medium', 'Medium'), ('high', 'High')], default='low')
     data_integrity_impact = fields.Text()
-    record_type = fields.Char()
+    record_type_id = fields.Many2one('gxp.catalog.record.type', string='Tipo de registro')
     is_part11_record = fields.Boolean(default=True)
     rely_on_electronic_record = fields.Boolean(default=True)
     current_version_id = fields.Many2one('gxp.sheet.version')
@@ -88,16 +88,6 @@ class GxpControlledSheet(models.Model):
                 '<p><strong>Tip:</strong> %s</p>'
                 '</div>'
             ) % (rec.status, version, rec.next_review_date or 'No programada', score, hint)
-
-    def action_open_onboarding(self):
-        wizard = self.env['gxp.onboarding.wizard'].create({})
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'gxp.onboarding.wizard',
-            'view_mode': 'form',
-            'res_id': wizard.id,
-            'target': 'new',
-        }
 
     def unlink(self):
         raise UserError('Regulated records cannot be deleted; archive them instead.')

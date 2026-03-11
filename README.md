@@ -29,6 +29,9 @@ Este módulo permite gestionar un ciclo de vida controlado para hojas de cálcul
 - `gxp.test.case`: casos de prueba vinculados al expediente.
 - `gxp.change.control`: control de cambios.
 - `gxp.periodic.review`: revisiones periódicas.
+- `gxp.catalog.business.process`: catálogo de procesos de negocio.
+- `gxp.catalog.record.type`: catálogo de tipos de registro.
+- `gxp.catalog.predicate.rule`: catálogo de predicate rules.
 
 ---
 
@@ -95,7 +98,7 @@ Si `use_chatter_audit` está activo en la hoja:
 
 - Vista Kanban “canvas” para hoja controlada con indicadores visuales.
 - Formulario con panel chatter.
-- Asistente de uso (`gxp.onboarding.wizard`) por pasos.
+- Catálogos operativos para proceso de negocio, tipo de registro y predicate rules.
 
 ---
 

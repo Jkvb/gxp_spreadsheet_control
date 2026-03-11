@@ -19,4 +19,9 @@ access_change_author,gxp.change.author,model_gxp_change_control,gxp_spreadsheet_
 access_review_admin,gxp.review.admin,model_gxp_periodic_review,gxp_spreadsheet_control.group_gxp_role_admin,1,1,1,0
 access_review_reviewer,gxp.review.reviewer,model_gxp_periodic_review,gxp_spreadsheet_control.group_gxp_role_reviewer,1,1,1,0
 access_sign_wizard,gxp.sign.wizard,model_gxp_sign_wizard,base.group_user,1,1,1,1
-access_onboarding_wizard,gxp.onboarding.wizard,model_gxp_onboarding_wizard,base.group_user,1,1,1,1
+access_catalog_bp_admin,gxp.catalog.bp.admin,model_gxp_catalog_business_process,gxp_spreadsheet_control.group_gxp_role_admin,1,1,1,0
+access_catalog_rt_admin,gxp.catalog.rt.admin,model_gxp_catalog_record_type,gxp_spreadsheet_control.group_gxp_role_admin,1,1,1,0
+access_catalog_pr_admin,gxp.catalog.pr.admin,model_gxp_catalog_predicate_rule,gxp_spreadsheet_control.group_gxp_role_admin,1,1,1,0
+access_catalog_bp_read,gxp.catalog.bp.read,model_gxp_catalog_business_process,base.group_user,1,0,0,0
+access_catalog_rt_read,gxp.catalog.rt.read,model_gxp_catalog_record_type,base.group_user,1,0,0,0
+access_catalog_pr_read,gxp.catalog.pr.read,model_gxp_catalog_predicate_rule,base.group_user,1,0,0,0

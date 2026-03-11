@@ -7,3 +7,4 @@ from . import validation_package
 from . import test_case
 from . import change_control
 from . import periodic_review
+from . import catalog
