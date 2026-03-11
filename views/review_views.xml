@@ -1,0 +1,20 @@
+<odoo>
+    <record id="view_gxp_periodic_review_tree" model="ir.ui.view">
+        <field name="name">gxp.periodic.review.tree</field>
+        <field name="model">gxp.periodic.review</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="sheet_id"/>
+                <field name="version_id"/>
+                <field name="review_due_date"/>
+                <field name="review_result"/>
+            </tree>
+        </field>
+    </record>
+    <record id="action_gxp_periodic_review" model="ir.actions.act_window">
+        <field name="name">Periodic Reviews</field>
+        <field name="res_model">gxp.periodic.review</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="menu_gxp_periodic_review" name="Periodic Reviews" parent="menu_gxp_root" action="action_gxp_periodic_review"/>
+</odoo>

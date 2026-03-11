@@ -1,0 +1,58 @@
+<odoo>
+    <record id="view_gxp_catalog_business_process_tree" model="ir.ui.view">
+        <field name="name">gxp.catalog.business.process.tree</field>
+        <field name="model">gxp.catalog.business.process</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_gxp_catalog_record_type_tree" model="ir.ui.view">
+        <field name="name">gxp.catalog.record.type.tree</field>
+        <field name="model">gxp.catalog.record.type</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_gxp_catalog_predicate_rule_tree" model="ir.ui.view">
+        <field name="name">gxp.catalog.predicate.rule.tree</field>
+        <field name="model">gxp.catalog.predicate.rule</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_gxp_catalog_business_process" model="ir.actions.act_window">
+        <field name="name">Catálogo procesos</field>
+        <field name="res_model">gxp.catalog.business.process</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <record id="action_gxp_catalog_record_type" model="ir.actions.act_window">
+        <field name="name">Catálogo tipos de registro</field>
+        <field name="res_model">gxp.catalog.record.type</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <record id="action_gxp_catalog_predicate_rule" model="ir.actions.act_window">
+        <field name="name">Catálogo predicate rules</field>
+        <field name="res_model">gxp.catalog.predicate.rule</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_gxp_catalog_root" name="Catálogos" parent="menu_gxp_root" sequence="90"/>
+    <menuitem id="menu_gxp_catalog_business_process" name="Procesos" parent="menu_gxp_catalog_root" action="action_gxp_catalog_business_process"/>
+    <menuitem id="menu_gxp_catalog_record_type" name="Tipos de registro" parent="menu_gxp_catalog_root" action="action_gxp_catalog_record_type"/>
+    <menuitem id="menu_gxp_catalog_predicate_rule" name="Predicate rules" parent="menu_gxp_catalog_root" action="action_gxp_catalog_predicate_rule"/>
+</odoo>

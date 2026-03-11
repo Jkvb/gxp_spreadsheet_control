@@ -1,0 +1,22 @@
+<odoo>
+    <record id="view_gxp_audit_event_tree" model="ir.ui.view">
+        <field name="name">gxp.audit.event.tree</field>
+        <field name="model">gxp.audit.event</field>
+        <field name="arch" type="xml">
+            <tree create="0" edit="0" delete="0">
+                <field name="event_datetime"/>
+                <field name="user_id"/>
+                <field name="event_type"/>
+                <field name="model_name"/>
+                <field name="record_display_name"/>
+                <field name="reason"/>
+            </tree>
+        </field>
+    </record>
+    <record id="action_gxp_audit_event" model="ir.actions.act_window">
+        <field name="name">Audit Trail</field>
+        <field name="res_model">gxp.audit.event</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="menu_gxp_audit" name="Audit Trail" parent="menu_gxp_root" action="action_gxp_audit_event"/>
+</odoo>

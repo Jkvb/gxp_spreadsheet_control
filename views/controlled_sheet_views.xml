@@ -1,0 +1,103 @@
+<odoo>
+    <record id="view_gxp_controlled_sheet_tree" model="ir.ui.view">
+        <field name="name">gxp.controlled.sheet.tree</field>
+        <field name="model">gxp.controlled.sheet</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="status"/>
+                <field name="owner_id"/>
+                <field name="compliance_score"/>
+                <field name="next_review_date"/>
+                <field name="use_chatter_audit"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_gxp_controlled_sheet_kanban" model="ir.ui.view">
+        <field name="name">gxp.controlled.sheet.kanban.canvas</field>
+        <field name="model">gxp.controlled.sheet</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_small_column">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="status"/>
+                <field name="workflow_hint"/>
+                <field name="compliance_score"/>
+                <field name="canvas_html"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click gxp-canvas-card">
+                            <div class="o_kanban_record_top">
+                                <strong><field name="code"/> - <field name="name"/></strong>
+                            </div>
+                            <div class="text-muted">Estado: <field name="status"/></div>
+                            <div class="text-info">Siguiente paso: <field name="workflow_hint"/></div>
+                            <div class="gxp-mini-progress">
+                                <div t-attf-style="width: #{record.compliance_score.value}%;"/>
+                            </div>
+                            <div><field name="canvas_html" widget="html"/></div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_gxp_controlled_sheet_form" model="ir.ui.view">
+        <field name="name">gxp.controlled.sheet.form</field>
+        <field name="model">gxp.controlled.sheet</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_under_assessment" type="object" string="En evaluación" attrs="{'invisible': [('status', '!=', 'draft')]}"/>
+                    <button name="action_approved_for_use" type="object" string="Aprobar para uso" attrs="{'invisible': [('status', '!=', 'under_assessment')]}"/>
+                    <field name="status" widget="statusbar" statusbar_visible="draft,under_assessment,approved_for_use,retired"/>
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code" readonly="1"/>
+                        <field name="owner_id"/>
+                        <field name="company_id"/>
+                        <field name="business_process_id"/>
+                        <field name="intended_use"/>
+                        <field name="predicate_rule_id"/>
+                        <field name="record_type_id"/>
+                        <field name="gxp_impact"/>
+                        <field name="workflow_hint" readonly="1"/>
+                        <field name="compliance_score" readonly="1"/>
+                        <field name="periodic_review_frequency_months"/>
+                        <field name="next_review_date"/>
+                        <field name="use_chatter_audit"/>
+                    </group>
+                    <notebook>
+                        <page string="Canvas GxP">
+                            <field name="canvas_html" widget="html" readonly="1"/>
+                        </page>
+                        <page string="Versions">
+                            <field name="version_ids"/>
+                        </page>
+                        <page string="Notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_gxp_controlled_sheet" model="ir.actions.act_window">
+        <field name="name">Hojas controladas</field>
+        <field name="res_model">gxp.controlled.sheet</field>
+        <field name="view_mode">kanban,tree,form</field>
+    </record>
+
+    <menuitem id="menu_gxp_root" name="Control Hojas calculo"/>
+    <menuitem id="menu_gxp_sheet" name="Hojas controladas" parent="menu_gxp_root" action="action_gxp_controlled_sheet"/>
+</odoo>

@@ -1,0 +1,17 @@
+<odoo noupdate="1">
+    <record id="gxp_bp_liberacion_lote" model="gxp.catalog.business.process">
+        <field name="name">Liberación de lote</field>
+        <field name="code">BP-REL</field>
+        <field name="description">Proceso de liberación de lote regulado.</field>
+    </record>
+    <record id="gxp_rt_calculo" model="gxp.catalog.record.type">
+        <field name="name">Registro de cálculo</field>
+        <field name="code">RT-CALC</field>
+        <field name="description">Hoja de cálculo usada como registro GxP.</field>
+    </record>
+    <record id="gxp_pr_part11" model="gxp.catalog.predicate.rule">
+        <field name="name">21 CFR Part 11</field>
+        <field name="code">PR-P11</field>
+        <field name="description">Control de registro electrónico y firma electrónica.</field>
+    </record>
+</odoo>

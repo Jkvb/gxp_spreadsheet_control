@@ -1,0 +1,23 @@
+<odoo>
+    <record id="view_gxp_sign_wizard_form" model="ir.ui.view">
+        <field name="name">gxp.sign.wizard.form</field>
+        <field name="model">gxp.sign.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Electronic Signature">
+                <group>
+                    <field name="user_id"/>
+                    <field name="password" password="True"/>
+                    <field name="sign_meaning"/>
+                    <field name="comment"/>
+                    <field name="object_summary"/>
+                    <field name="file_hash"/>
+                    <field name="responsibility_confirmed"/>
+                </group>
+                <footer>
+                    <button name="action_sign" type="object" string="Sign" class="btn-primary"/>
+                    <button string="Cancel" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

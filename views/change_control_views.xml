@@ -1,0 +1,20 @@
+<odoo>
+    <record id="view_gxp_change_control_tree" model="ir.ui.view">
+        <field name="name">gxp.change.control.tree</field>
+        <field name="model">gxp.change.control</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="change_no"/>
+                <field name="sheet_id"/>
+                <field name="approval_state"/>
+                <field name="linked_new_version_id"/>
+            </tree>
+        </field>
+    </record>
+    <record id="action_gxp_change_control" model="ir.actions.act_window">
+        <field name="name">Change Controls</field>
+        <field name="res_model">gxp.change.control</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="menu_gxp_change" name="Change Control" parent="menu_gxp_root" action="action_gxp_change_control"/>
+</odoo>

@@ -1,0 +1,263 @@
+import base64
+import hashlib
+
+from odoo.exceptions import UserError
+from odoo.tests.common import SavepointCase
+
+
+class TestGxpSpreadsheetControl(SavepointCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.sheet_model = cls.env['gxp.controlled.sheet']
+        cls.version_model = cls.env['gxp.sheet.version']
+        cls.sign_wizard_model = cls.env['gxp.sign.wizard']
+        cls.change_model = cls.env['gxp.change.control']
+        cls.audit_model = cls.env['gxp.audit.event']
+
+    def _create_sheet(self):
+        return self.sheet_model.create({
+            'name': 'Balance calculation',
+            'intended_use': 'Batch release calculation',
+        })
+
+    def _create_version(self, sheet):
+        raw = b'controlled spreadsheet payload'
+        return self.version_model.create({
+            'sheet_id': sheet.id,
+            'version_major': 1,
+            'version_minor': 0,
+            'file_name': 'sheet.xlsx',
+            'file_binary': base64.b64encode(raw),
+            'change_summary': 'Initial issue',
+        }), raw
+
+    def test_create_sheet_and_version_hash(self):
+        sheet = self._create_sheet()
+        version, raw = self._create_version(sheet)
+        self.assertTrue(sheet.code.startswith('SHT-'))
+        self.assertEqual(version.file_sha256, hashlib.sha256(raw).hexdigest())
+
+    def test_effective_version_is_locked_and_unique(self):
+        sheet = self._create_sheet()
+        version1, _ = self._create_version(sheet)
+        version2 = self.version_model.create({
+            'sheet_id': sheet.id,
+            'version_major': 1,
+            'version_minor': 1,
+            'file_name': 'sheet2.xlsx',
+            'file_binary': base64.b64encode(b'new payload'),
+            'change_summary': 'Revision',
+        })
+        self.env['gxp.signature.event'].create({
+            'res_model': 'gxp.sheet.version',
+            'res_id': version1.id,
+            'version_id': version1.id,
+            'signer_id': self.env.user.id,
+            'signer_name_snapshot': self.env.user.name,
+            'sign_meaning': 'approval',
+            'record_sha256_at_sign': version1.file_sha256,
+        })
+        version1.action_make_effective()
+        self.assertEqual(version1.state, 'effective')
+        with self.assertRaises(UserError):
+            version1.write({'change_summary': 'forbidden'})
+
+        self.env['gxp.signature.event'].create({
+            'res_model': 'gxp.sheet.version',
+            'res_id': version2.id,
+            'version_id': version2.id,
+            'signer_id': self.env.user.id,
+            'signer_name_snapshot': self.env.user.name,
+            'sign_meaning': 'approval',
+            'record_sha256_at_sign': version2.file_sha256,
+        })
+        version2.action_make_effective()
+        self.assertEqual(version2.state, 'effective')
+        self.assertEqual(version1.state, 'superseded')
+
+    def test_unlink_blocked_on_regulated_models(self):
+        sheet = self._create_sheet()
+        version, _ = self._create_version(sheet)
+        with self.assertRaises(UserError):
+            sheet.unlink()
+        with self.assertRaises(UserError):
+            version.unlink()
+
+    def test_change_control_requires_linked_version_for_close(self):
+        sheet = self._create_sheet()
+        change = self.change_model.create({
+            'sheet_id': sheet.id,
+            'reason_for_change': 'Fix formula',
+            'risk_assessment': 'Low',
+            'impact_assessment': 'Medium',
+            'implementation_plan': 'Retest and deploy',
+        })
+        with self.assertRaises(UserError):
+            change.action_close()
+
+    def test_audit_event_created(self):
+        sheet = self._create_sheet()
+        events = self.audit_model.search([
+            ('model_name', '=', 'gxp.controlled.sheet'),
+            ('record_id', '=', sheet.id),
+            ('event_type', '=', 'create'),
+        ])
+        self.assertTrue(events)
+
+
+    def test_visual_helpers_render(self):
+        sheet = self._create_sheet()
+        self.assertTrue(sheet.canvas_html)
+        self.assertGreaterEqual(sheet.compliance_score, 0)
+
+
+    def test_audit_is_reflected_in_chatter_when_enabled(self):
+        sheet = self._create_sheet()
+        initial = len(sheet.message_ids)
+        sheet.write({'name': 'Balance calculation v2'})
+        self.assertGreater(len(sheet.message_ids), initial)
+
+    def test_audit_not_posted_in_chatter_when_disabled(self):
+        sheet = self._create_sheet()
+        sheet.write({'use_chatter_audit': False})
+        initial = len(sheet.message_ids)
+        sheet.write({'name': 'Balance calculation v3'})
+        self.assertEqual(len(sheet.message_ids), initial)
+
+
+    def test_make_effective_requires_closed_change_control_for_new_revision(self):
+        sheet = self._create_sheet()
+        version1, _ = self._create_version(sheet)
+        self.env['gxp.signature.event'].create({
+            'res_model': 'gxp.sheet.version',
+            'res_id': version1.id,
+            'version_id': version1.id,
+            'signer_id': self.env.user.id,
+            'signer_name_snapshot': self.env.user.name,
+            'sign_meaning': 'approval',
+            'record_sha256_at_sign': version1.file_sha256,
+        })
+        version1.action_make_effective()
+
+        version2 = self.version_model.create({
+            'sheet_id': sheet.id,
+            'version_major': 1,
+            'version_minor': 1,
+            'file_name': 'sheet2.xlsx',
+            'file_binary': base64.b64encode(b'new payload'),
+            'change_summary': 'Revision',
+        })
+        self.env['gxp.signature.event'].create({
+            'res_model': 'gxp.sheet.version',
+            'res_id': version2.id,
+            'version_id': version2.id,
+            'signer_id': self.env.user.id,
+            'signer_name_snapshot': self.env.user.name,
+            'sign_meaning': 'approval',
+            'record_sha256_at_sign': version2.file_sha256,
+        })
+        with self.assertRaises(UserError):
+            version2.action_make_effective()
+
+    def test_approval_signature_does_not_lock_before_effective(self):
+        sheet = self._create_sheet()
+        version, _ = self._create_version(sheet)
+        wizard = self.sign_wizard_model.create({
+            'password': 'admin',
+            'sign_meaning': 'approval',
+            'comment': 'ok',
+            'res_model': 'gxp.sheet.version',
+            'res_id': version.id,
+            'version_id': version.id,
+            'file_hash': version.file_sha256,
+        })
+        wizard.action_sign()
+        self.assertFalse(version.is_locked)
+
+
+    def test_sheet_can_link_catalogs(self):
+        bp = self.env['gxp.catalog.business.process'].create({'name': 'BP', 'code': 'BP-T'})
+        rt = self.env['gxp.catalog.record.type'].create({'name': 'RT', 'code': 'RT-T'})
+        pr = self.env['gxp.catalog.predicate.rule'].create({'name': 'PR', 'code': 'PR-T'})
+        sheet = self.sheet_model.create({
+            'name': 'Catalog linked sheet',
+            'intended_use': 'Regulated calc',
+            'business_process_id': bp.id,
+            'record_type_id': rt.id,
+            'predicate_rule_id': pr.id,
+        })
+        self.assertEqual(sheet.business_process_id.id, bp.id)
+        self.assertEqual(sheet.record_type_id.id, rt.id)
+        self.assertEqual(sheet.predicate_rule_id.id, pr.id)
+
+
+    def test_web_edit_mode_hash_and_submit(self):
+        sheet = self._create_sheet()
+        version = self.version_model.create({
+            'sheet_id': sheet.id,
+            'version_major': 1,
+            'version_minor': 2,
+            'file_name': 'web_mode',
+            'change_summary': 'Web edition',
+            'web_edit_mode': True,
+        })
+        self.assertTrue(version.file_sha256)
+        self.env['gxp.sheet.web.line'].create({
+            'version_id': version.id,
+            'row_no': 1,
+            'value_1': 'A',
+            'value_2': 'B',
+        })
+        self.assertTrue(version.file_sha256)
+        version.action_submit_review()
+        self.assertEqual(version.state, 'in_review')
+
+    def test_version_requires_file_or_web_mode(self):
+        sheet = self._create_sheet()
+        with self.assertRaises(UserError):
+            self.version_model.create({
+                'sheet_id': sheet.id,
+                'version_major': 9,
+                'version_minor': 9,
+                'file_name': 'invalid',
+                'change_summary': 'Missing content',
+            })
+
+
+    def test_action_open_excel_with_binary(self):
+        sheet = self._create_sheet()
+        version, _ = self._create_version(sheet)
+        action = version.action_open_excel()
+        self.assertEqual(action.get('type'), 'ir.actions.act_url')
+        self.assertIn('/web/content/gxp.sheet.version/%s/file_binary' % version.id, action.get('url'))
+
+    def test_action_open_excel_with_web_mode(self):
+        sheet = self._create_sheet()
+        version = self.version_model.create({
+            'sheet_id': sheet.id,
+            'version_major': 2,
+            'version_minor': 0,
+            'file_name': 'webmode',
+            'change_summary': 'web',
+            'web_edit_mode': True,
+        })
+        self.env['gxp.sheet.web.line'].create({
+            'version_id': version.id,
+            'row_no': 1,
+            'value_1': 'A',
+        })
+        action = version.action_open_excel()
+        self.assertEqual(action.get('type'), 'ir.actions.act_url')
+        self.assertIn('field=dummy_export', action.get('url'))
+
+
+    def test_action_open_pdf_preview_with_snapshot(self):
+        sheet = self._create_sheet()
+        version, _ = self._create_version(sheet)
+        version.write({'pdf_snapshot_binary': base64.b64encode(b'%PDF-1.4 dummy')})
+        action = version.action_open_pdf_preview()
+        self.assertEqual(action.get('type'), 'ir.actions.act_url')
+        self.assertIn('/web/content/gxp.sheet.version/%s/pdf_snapshot_binary' % version.id, action.get('url'))
+        self.assertIn('download=false', action.get('url'))
