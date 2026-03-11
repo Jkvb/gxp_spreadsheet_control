@@ -224,3 +224,30 @@ class TestGxpSpreadsheetControl(SavepointCase):
                 'file_name': 'invalid',
                 'change_summary': 'Missing content',
             })
+
+
+    def test_action_open_excel_with_binary(self):
+        sheet = self._create_sheet()
+        version, _ = self._create_version(sheet)
+        action = version.action_open_excel()
+        self.assertEqual(action.get('type'), 'ir.actions.act_url')
+        self.assertIn('/web/content/gxp.sheet.version/%s/file_binary' % version.id, action.get('url'))
+
+    def test_action_open_excel_with_web_mode(self):
+        sheet = self._create_sheet()
+        version = self.version_model.create({
+            'sheet_id': sheet.id,
+            'version_major': 2,
+            'version_minor': 0,
+            'file_name': 'webmode',
+            'change_summary': 'web',
+            'web_edit_mode': True,
+        })
+        self.env['gxp.sheet.web.line'].create({
+            'version_id': version.id,
+            'row_no': 1,
+            'value_1': 'A',
+        })
+        action = version.action_open_excel()
+        self.assertEqual(action.get('type'), 'ir.actions.act_url')
+        self.assertIn('field=dummy_export', action.get('url'))

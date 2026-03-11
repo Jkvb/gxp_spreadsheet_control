@@ -46,10 +46,18 @@ class GxpSheetVersion(models.Model):
     approved_at = fields.Datetime()
     signature_ids = fields.One2many('gxp.signature.event', 'version_id')
     use_chatter_audit = fields.Boolean(related='sheet_id.use_chatter_audit', readonly=True)
+    dummy_export = fields.Binary(compute='_compute_dummy_export')
 
     _sql_constraints = [
         ('version_unique', 'unique(sheet_id, version_major, version_minor)', 'Version numbers must be unique per sheet.'),
     ]
+
+    def _compute_dummy_export(self):
+        for rec in self:
+            if rec.web_edit_mode and rec.web_line_ids:
+                rec.dummy_export = rec._build_web_csv_binary()
+            else:
+                rec.dummy_export = False
 
     @api.depends('version_major', 'version_minor')
     def _compute_version_label(self):
@@ -217,6 +225,38 @@ class GxpSheetVersion(models.Model):
             raise UserError('Retirement signature required.')
         self.with_context(gxp_force_write=True).write({'state': 'retired', 'is_locked': True})
         self._gxp_log_event('archive', reason=reason)
+
+
+    def _build_web_csv_binary(self):
+        self.ensure_one()
+        rows = ['row,C1,C2,C3,C4,C5,C6,C7,C8,C9,C10']
+        for line in self.web_line_ids.sorted(key=lambda l: (l.row_no, l.id)):
+            vals = [
+                str(line.row_no or ''),
+                line.value_1 or '', line.value_2 or '', line.value_3 or '', line.value_4 or '', line.value_5 or '',
+                line.value_6 or '', line.value_7 or '', line.value_8 or '', line.value_9 or '', line.value_10 or '',
+            ]
+            sanitized = ['"%s"' % v.replace('"', '""') for v in vals]
+            rows.append(','.join(sanitized))
+        return base64.b64encode(('\n'.join(rows)).encode('utf-8'))
+
+    def action_open_excel(self):
+        self.ensure_one()
+        if self.file_binary:
+            self._gxp_log_event('download', reason='Apertura de Excel controlado')
+            return {
+                'type': 'ir.actions.act_url',
+                'url': '/web/content/gxp.sheet.version/%s/file_binary/%s?download=true' % (self.id, self.file_name or 'archivo.xlsx'),
+                'target': 'self',
+            }
+        if self.web_edit_mode and self.web_line_ids:
+            self._gxp_log_event('export', reason='Exportación CSV desde edición navegador')
+            return {
+                'type': 'ir.actions.act_url',
+                'url': '/web/content?model=gxp.sheet.version&id=%s&field=dummy_export&filename=%s&download=true' % (self.id, (self.file_name or 'hoja_web') + '.csv'),
+                'target': 'self',
+            }
+        raise UserError('No hay archivo Excel cargado ni contenido web para exportar.')
 
     def action_download_controlled(self):
         self._gxp_log_event('download', reason='Controlled download')
