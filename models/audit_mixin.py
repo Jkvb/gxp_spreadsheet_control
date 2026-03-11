@@ -11,9 +11,13 @@ class GxpAuditMixin(models.AbstractModel):
         request_obj = None
 
         # Odoo 12 compatibility: use global http request when available.
-        if http_request and getattr(http_request, 'httprequest', None):
-            request_obj = http_request
-        else:
+        try:
+            if getattr(http_request, 'httprequest', None):
+                request_obj = http_request
+        except Exception:
+            request_obj = None
+
+        if request_obj is None:
             # Fallback for environments exposing request stack on ir.http.
             ir_http = self.env['ir.http'].sudo()
             request_stack = getattr(ir_http, '_request_stack', None)
