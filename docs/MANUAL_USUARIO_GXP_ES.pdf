@@ -1,0 +1,136 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [ 4 0 R 6 0 R 8 0 R ] /Count 3 >>
+endobj
+3 0 obj
+<< /Length 2720 >>
+stream
+BT /F1 11 Tf 40 820 Td (Manual de Usuario - gxp_spreadsheet_control) Tj ET
+BT /F1 10 Tf 40 800 Td (# Manual de Usuario) Tj ET
+BT /F1 10 Tf 40 788 Td (## gxp_spreadsheet_control \(Odoo 12\)) Tj ET
+BT /F1 10 Tf 40 764 Td (### 1. Objetivo) Tj ET
+BT /F1 10 Tf 40 752 Td (Este mdulo permite controlar hojas de clculo reguladas en Odoo con enfoque GxP:) Tj ET
+BT /F1 10 Tf 40 740 Td (- Inventario maestro de hojas controladas.) Tj ET
+BT /F1 10 Tf 40 728 Td (- Versionado con hash SHA-256.) Tj ET
+BT /F1 10 Tf 40 716 Td (- Flujo de revisin y aprobacin.) Tj ET
+BT /F1 10 Tf 40 704 Td (- Firma electrnica con reautenticacin.) Tj ET
+BT /F1 10 Tf 40 692 Td (- Audit trail inmutable.) Tj ET
+BT /F1 10 Tf 40 680 Td (- Control de cambios y revisin peridica.) Tj ET
+BT /F1 10 Tf 40 668 Td (- Edicin tabular en navegador y apertura de Excel/PDF.) Tj ET
+BT /F1 10 Tf 40 644 Td (### 2. Men principal) Tj ET
+BT /F1 10 Tf 40 632 Td (Ir a **Control Hojas calculo**.) Tj ET
+BT /F1 10 Tf 40 620 Td (Submens ms usados:) Tj ET
+BT /F1 10 Tf 40 608 Td (- Hojas controladas) Tj ET
+BT /F1 10 Tf 40 596 Td (- Versiones) Tj ET
+BT /F1 10 Tf 40 584 Td (- Change Control) Tj ET
+BT /F1 10 Tf 40 572 Td (- Periodic Reviews) Tj ET
+BT /F1 10 Tf 40 560 Td (- Audit Trail) Tj ET
+BT /F1 10 Tf 40 548 Td (- Catlogos) Tj ET
+BT /F1 10 Tf 40 524 Td (### 3. Alta de hoja controlada) Tj ET
+BT /F1 10 Tf 40 512 Td (1\) Entrar a **Hojas controladas** y pulsar **Crear**.) Tj ET
+BT /F1 10 Tf 40 500 Td (2\) Completar campos mnimos:) Tj ET
+BT /F1 10 Tf 40 488 Td (- Nombre) Tj ET
+BT /F1 10 Tf 40 476 Td (- Intended use) Tj ET
+BT /F1 10 Tf 40 464 Td (- Proceso de negocio \(catlogo\)) Tj ET
+BT /F1 10 Tf 40 452 Td (- Tipo de registro \(catlogo\)) Tj ET
+BT /F1 10 Tf 40 440 Td (- Predicate rule \(catlogo\)) Tj ET
+BT /F1 10 Tf 40 428 Td (3\) Guardar. El sistema asigna cdigo automticamente.) Tj ET
+BT /F1 10 Tf 40 404 Td (### 4. Crear una versin controlada) Tj ET
+BT /F1 10 Tf 40 392 Td (1\) Ir a **Versiones** y pulsar **Crear**.) Tj ET
+BT /F1 10 Tf 40 380 Td (2\) Seleccionar la hoja.) Tj ET
+BT /F1 10 Tf 40 368 Td (3\) Elegir modo:) Tj ET
+BT /F1 10 Tf 40 356 Td (- Archivo: cargar Excel en `file_binary`.) Tj ET
+BT /F1 10 Tf 40 344 Td (- Navegador: activar `Edicin en navegador` y capturar filas en la pestaa de contenido web.) Tj ET
+BT /F1 10 Tf 40 332 Td (4\) Completar `change_summary`.) Tj ET
+BT /F1 10 Tf 40 320 Td (5\) Guardar.) Tj ET
+BT /F1 10 Tf 40 296 Td (### 5. Editar hoja desde navegador) Tj ET
+BT /F1 10 Tf 40 284 Td (1\) Abrir la versin en estado borrador.) Tj ET
+BT /F1 10 Tf 40 272 Td (2\) Activar `Edicin en navegador`.) Tj ET
+BT /F1 10 Tf 40 260 Td (3\) En pestaa **Contenido web \(navegador\)** agregar/modificar filas.) Tj ET
+endstream
+endobj
+4 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> /Contents 3 0 R >>
+endobj
+5 0 obj
+<< /Length 2876 >>
+stream
+BT /F1 11 Tf 40 820 Td (Manual de Usuario - gxp_spreadsheet_control) Tj ET
+BT /F1 10 Tf 40 800 Td (4\) El hash de la versin se recalcula automticamente.) Tj ET
+BT /F1 10 Tf 40 776 Td (### 6. Abrir documentos) Tj ET
+BT /F1 10 Tf 40 764 Td (- **Abrir Excel**:) Tj ET
+BT /F1 10 Tf 40 752 Td (- Si la versin tiene archivo, abre/descarga el Excel real.) Tj ET
+BT /F1 10 Tf 40 740 Td (- Si es modo web, exporta CSV.) Tj ET
+BT /F1 10 Tf 40 728 Td (- **Ver PDF embebido**:) Tj ET
+BT /F1 10 Tf 40 716 Td (- Abre `pdf_snapshot_binary` en visor embebido \(download=false\).) Tj ET
+BT /F1 10 Tf 40 692 Td (### 7. Flujo de estados de versin) Tj ET
+BT /F1 10 Tf 40 680 Td (Estados:) Tj ET
+BT /F1 10 Tf 40 668 Td (- Draft -> In Review -> Pending Approval -> Effective) Tj ET
+BT /F1 10 Tf 40 656 Td (- Effective -> Superseded / Retired) Tj ET
+BT /F1 10 Tf 40 632 Td (Reglas clave:) Tj ET
+BT /F1 10 Tf 40 620 Td (- No enviar a revisin sin contenido \(archivo o web\).) Tj ET
+BT /F1 10 Tf 40 608 Td (- No pasar a aprobacin sin firma de revisin.) Tj ET
+BT /F1 10 Tf 40 596 Td (- No hacer efectiva sin firma de aprobacin.) Tj ET
+BT /F1 10 Tf 40 584 Td (- Reemplazar una versin efectiva requiere Change Control cerrado y vinculado.) Tj ET
+BT /F1 10 Tf 40 572 Td (- Versiones efectivas/bloqueadas no se editan.) Tj ET
+BT /F1 10 Tf 40 548 Td (### 8. Firma electrnica) Tj ET
+BT /F1 10 Tf 40 536 Td (1\) En versin, usar botones:) Tj ET
+BT /F1 10 Tf 40 524 Td (- Firmar revisin) Tj ET
+BT /F1 10 Tf 40 512 Td (- Firmar aprobacin) Tj ET
+BT /F1 10 Tf 40 500 Td (2\) Ingresar contrasea del usuario actual \(reauth\).) Tj ET
+BT /F1 10 Tf 40 488 Td (3\) El sistema guarda evento de firma con:) Tj ET
+BT /F1 10 Tf 40 476 Td (- firmante) Tj ET
+BT /F1 10 Tf 40 464 Td (- fecha/hora) Tj ET
+BT /F1 10 Tf 40 452 Td (- significado) Tj ET
+BT /F1 10 Tf 40 440 Td (- hash firmado) Tj ET
+BT /F1 10 Tf 40 416 Td (### 9. Auditora) Tj ET
+BT /F1 10 Tf 40 404 Td (- Evidencia principal: modelo `gxp.audit.event` \(append-only\).) Tj ET
+BT /F1 10 Tf 40 392 Td (- Evidencia complementaria: notas en chatter \(si `use_chatter_audit` est activo\).) Tj ET
+BT /F1 10 Tf 40 380 Td (- Se registran eventos de creacin, cambios, firmas, descargas/exportaciones y transiciones de estado.) Tj ET
+BT /F1 10 Tf 40 356 Td (### 10. Change Control y revisin peridica) Tj ET
+BT /F1 10 Tf 40 344 Td (- Toda sustitucin de versin vigente debe vincularse a Change Control cerrado.) Tj ET
+BT /F1 10 Tf 40 332 Td (- El cron diario genera revisiones peridicas vencidas.) Tj ET
+BT /F1 10 Tf 40 308 Td (### 11. Roles recomendados) Tj ET
+BT /F1 10 Tf 40 296 Td (- Author: crea y prepara borradores.) Tj ET
+BT /F1 10 Tf 40 284 Td (- Reviewer: revisa y firma revisin.) Tj ET
+BT /F1 10 Tf 40 272 Td (- Approver: firma aprobacin y decide vigencia/retiro.) Tj ET
+BT /F1 10 Tf 40 260 Td (- Auditor Readonly: consulta evidencia.) Tj ET
+endstream
+endobj
+6 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> /Contents 5 0 R >>
+endobj
+7 0 obj
+<< /Length 557 >>
+stream
+BT /F1 11 Tf 40 820 Td (Manual de Usuario - gxp_spreadsheet_control) Tj ET
+BT /F1 10 Tf 40 800 Td (- Admin: parametrizacin y soporte.) Tj ET
+BT /F1 10 Tf 40 776 Td (### 12. Buenas prcticas GxP) Tj ET
+BT /F1 10 Tf 40 764 Td (- No trabajar con archivos maestros fuera de Odoo.) Tj ET
+BT /F1 10 Tf 40 752 Td (- Usar siempre el flujo de versin + firma.) Tj ET
+BT /F1 10 Tf 40 740 Td (- Mantener SOPs de usuarios, firma, backup/restore y change control.) Tj ET
+BT /F1 10 Tf 40 728 Td (- Ejecutar validacin basada en riesgo con trazabilidad documental.) Tj ET
+endstream
+endobj
+8 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 << /Type /Font /Subtype /Type1 /BaseFont /Helvetica >> >> >> /Contents 7 0 R >>
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000129 00000 n 
+0000002901 00000 n 
+0000003076 00000 n 
+0000006004 00000 n 
+0000006179 00000 n 
+0000006787 00000 n 
+trailer
+<< /Size 9 /Root 1 0 R >>
+startxref
+6962
+%%EOF
