@@ -25,10 +25,13 @@ class GxpSheetVersion(models.Model):
         ('cancelled', 'Cancelled'),
     ], default='draft', tracking=True)
     file_name = fields.Char(required=True)
-    file_binary = fields.Binary(required=True, attachment=True)
+    file_binary = fields.Binary(attachment=True)
     file_mimetype = fields.Char()
     file_size = fields.Integer()
     file_sha256 = fields.Char(index=True)
+
+    web_edit_mode = fields.Boolean(string='Edición en navegador', help='Permite capturar y editar datos tabulares directamente en Odoo.')
+    web_line_ids = fields.One2many('gxp.sheet.web.line', 'version_id', string='Contenido web')
     pdf_snapshot_binary = fields.Binary(attachment=True)
     pdf_snapshot_sha256 = fields.Char()
     change_summary = fields.Text(required=True)
@@ -56,7 +59,11 @@ class GxpSheetVersion(models.Model):
     @api.model
     def create(self, vals):
         vals = self._prepare_hash_vals(vals)
+        if not vals.get('file_binary') and not vals.get('web_edit_mode'):
+            raise UserError('Debe cargar archivo o activar edición en navegador.')
         rec = super().create(vals)
+        if rec.web_edit_mode and not rec.file_sha256:
+            rec._recompute_hash_from_web_content()
         rec._gxp_log_event('create', changes=[{'field_name': 'file_sha256', 'new_value': rec.file_sha256}])
         return rec
 
@@ -85,6 +92,28 @@ class GxpSheetVersion(models.Model):
         if pdf_binary:
             vals['pdf_snapshot_sha256'] = hashlib.sha256(base64.b64decode(pdf_binary)).hexdigest()
         return vals
+
+
+    def _serialize_web_content(self):
+        self.ensure_one()
+        payload = []
+        for line in self.web_line_ids.sorted(key=lambda l: (l.row_no, l.id)):
+            payload.append('|'.join([
+                str(line.row_no or ''),
+                line.value_1 or '', line.value_2 or '', line.value_3 or '', line.value_4 or '', line.value_5 or '',
+                line.value_6 or '', line.value_7 or '', line.value_8 or '', line.value_9 or '', line.value_10 or '',
+            ]))
+        return '\n'.join(payload).encode('utf-8')
+
+    def _recompute_hash_from_web_content(self):
+        for rec in self:
+            if not rec.web_edit_mode:
+                continue
+            raw = rec._serialize_web_content()
+            rec.with_context(gxp_force_write=True).write({
+                'file_sha256': hashlib.sha256(raw).hexdigest(),
+                'file_size': len(raw),
+            })
 
     def _has_valid_signature(self, meaning):
         self.ensure_one()
@@ -145,7 +174,9 @@ class GxpSheetVersion(models.Model):
 
     def action_submit_review(self):
         for rec in self:
-            if not rec.file_binary:
+            if rec.web_edit_mode and not rec.web_line_ids:
+                raise UserError('Debe capturar contenido en la edición web antes de enviar a revisión.')
+            if not rec.web_edit_mode and not rec.file_binary:
                 raise UserError('Debe cargar archivo antes de enviar a revisión.')
             rec._require_group('gxp_spreadsheet_control.group_gxp_role_author', 'Solo Author/Admin puede enviar a revisión.')
         self.write({'state': 'in_review'})

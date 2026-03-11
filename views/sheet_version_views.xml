@@ -31,6 +31,7 @@
                         <field name="version_major"/>
                         <field name="version_minor"/>
                         <field name="version_label" readonly="1"/>
+                        <field name="web_edit_mode"/>
                         <field name="file_name"/>
                         <field name="file_binary" filename="file_name"/>
                         <field name="file_sha256" readonly="1"/>
@@ -38,6 +39,25 @@
                         <field name="is_locked" readonly="1"/>
                         <field name="use_chatter_audit" readonly="1"/>
                     </group>
+                    <notebook>
+                        <page string="Contenido web (navegador)">
+                            <field name="web_line_ids" context="{'default_version_id': active_id}">
+                                <tree editable="bottom">
+                                    <field name="row_no"/>
+                                    <field name="value_1"/>
+                                    <field name="value_2"/>
+                                    <field name="value_3"/>
+                                    <field name="value_4"/>
+                                    <field name="value_5"/>
+                                    <field name="value_6"/>
+                                    <field name="value_7"/>
+                                    <field name="value_8"/>
+                                    <field name="value_9"/>
+                                    <field name="value_10"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" widget="mail_followers"/>

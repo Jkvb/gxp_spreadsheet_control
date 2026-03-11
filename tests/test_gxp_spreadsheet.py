@@ -191,3 +191,36 @@ class TestGxpSpreadsheetControl(SavepointCase):
         self.assertEqual(sheet.business_process_id.id, bp.id)
         self.assertEqual(sheet.record_type_id.id, rt.id)
         self.assertEqual(sheet.predicate_rule_id.id, pr.id)
+
+
+    def test_web_edit_mode_hash_and_submit(self):
+        sheet = self._create_sheet()
+        version = self.version_model.create({
+            'sheet_id': sheet.id,
+            'version_major': 1,
+            'version_minor': 2,
+            'file_name': 'web_mode',
+            'change_summary': 'Web edition',
+            'web_edit_mode': True,
+        })
+        self.assertTrue(version.file_sha256)
+        self.env['gxp.sheet.web.line'].create({
+            'version_id': version.id,
+            'row_no': 1,
+            'value_1': 'A',
+            'value_2': 'B',
+        })
+        self.assertTrue(version.file_sha256)
+        version.action_submit_review()
+        self.assertEqual(version.state, 'in_review')
+
+    def test_version_requires_file_or_web_mode(self):
+        sheet = self._create_sheet()
+        with self.assertRaises(UserError):
+            self.version_model.create({
+                'sheet_id': sheet.id,
+                'version_major': 9,
+                'version_minor': 9,
+                'file_name': 'invalid',
+                'change_summary': 'Missing content',
+            })

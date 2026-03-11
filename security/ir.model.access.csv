@@ -25,3 +25,7 @@ access_catalog_pr_admin,gxp.catalog.pr.admin,model_gxp_catalog_predicate_rule,gx
 access_catalog_bp_read,gxp.catalog.bp.read,model_gxp_catalog_business_process,base.group_user,1,0,0,0
 access_catalog_rt_read,gxp.catalog.rt.read,model_gxp_catalog_record_type,base.group_user,1,0,0,0
 access_catalog_pr_read,gxp.catalog.pr.read,model_gxp_catalog_predicate_rule,base.group_user,1,0,0,0
+access_web_line_admin,gxp.web.line.admin,model_gxp_sheet_web_line,gxp_spreadsheet_control.group_gxp_role_admin,1,1,1,0
+access_web_line_author,gxp.web.line.author,model_gxp_sheet_web_line,gxp_spreadsheet_control.group_gxp_role_author,1,1,1,0
+access_web_line_reviewer,gxp.web.line.reviewer,model_gxp_sheet_web_line,gxp_spreadsheet_control.group_gxp_role_reviewer,1,0,0,0
+access_web_line_approver,gxp.web.line.approver,model_gxp_sheet_web_line,gxp_spreadsheet_control.group_gxp_role_approver,1,0,0,0

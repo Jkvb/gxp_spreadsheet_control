@@ -8,6 +8,7 @@ Este módulo permite gestionar un ciclo de vida controlado para hojas de cálcul
 
 - Inventario maestro de hojas controladas.
 - Versionado con hash SHA-256.
+- Edición controlada desde navegador (modo tabular web) para evitar compartir archivo maestro.
 - Flujo de estados (borrador, revisión, aprobación, vigente, retirada).
 - Firma electrónica con reautenticación.
 - Audit trail inmutable (modelo propio).
@@ -137,7 +138,7 @@ Pruebas automáticas en `tests/test_gxp_spreadsheet.py` cubren base funcional:
 
 ## Limitaciones actuales del MVP
 
-- No edita Excel en tiempo real dentro del navegador.
+- No replica al 100% todas las funciones avanzadas de Excel (macros, pivots, etc.) dentro del navegador.
 - No incluye biometría ni MFA productiva.
 - No incluye OCR ni análisis celda-a-celda de fórmulas.
 - No sustituye SOPs y controles organizacionales.
