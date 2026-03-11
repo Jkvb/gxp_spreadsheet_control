@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.http import request as http_request
 
 
 class GxpAuditMixin(models.AbstractModel):
@@ -7,17 +8,39 @@ class GxpAuditMixin(models.AbstractModel):
 
     @api.model
     def _gxp_client_context(self):
-        request = self.env['ir.http'].sudo()._request_stack.top
-        if not request:
+        request_obj = None
+
+        # Odoo 12 compatibility: use global http request when available.
+        if http_request and getattr(http_request, 'httprequest', None):
+            request_obj = http_request
+        else:
+            # Fallback for environments exposing request stack on ir.http.
+            ir_http = self.env['ir.http'].sudo()
+            request_stack = getattr(ir_http, '_request_stack', None)
+            if request_stack is not None:
+                request_obj = request_stack.top
+
+        if not request_obj:
             return {
                 'session_identifier': self.env.context.get('session_id') or 'n/a',
                 'client_ip': 'n/a',
                 'user_agent': 'n/a',
             }
+
+        session_identifier = 'n/a'
+        if getattr(request_obj, 'session', None):
+            session_identifier = getattr(request_obj.session, 'sid', 'n/a')
+
+        httprequest = getattr(request_obj, 'httprequest', None)
+        client_ip = getattr(httprequest, 'remote_addr', 'n/a') if httprequest else 'n/a'
+        user_agent = 'n/a'
+        if httprequest and getattr(httprequest, 'user_agent', None):
+            user_agent = getattr(httprequest.user_agent, 'string', 'n/a')
+
         return {
-            'session_identifier': request.session.sid,
-            'client_ip': request.httprequest.remote_addr,
-            'user_agent': request.httprequest.user_agent.string,
+            'session_identifier': session_identifier,
+            'client_ip': client_ip,
+            'user_agent': user_agent,
         }
 
     def _gxp_format_chatter_body(self, event_type, reason=None, changes=None):
