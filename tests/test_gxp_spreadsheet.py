@@ -251,3 +251,13 @@ class TestGxpSpreadsheetControl(SavepointCase):
         action = version.action_open_excel()
         self.assertEqual(action.get('type'), 'ir.actions.act_url')
         self.assertIn('field=dummy_export', action.get('url'))
+
+
+    def test_action_open_pdf_preview_with_snapshot(self):
+        sheet = self._create_sheet()
+        version, _ = self._create_version(sheet)
+        version.write({'pdf_snapshot_binary': base64.b64encode(b'%PDF-1.4 dummy')})
+        action = version.action_open_pdf_preview()
+        self.assertEqual(action.get('type'), 'ir.actions.act_url')
+        self.assertIn('/web/content/gxp.sheet.version/%s/pdf_snapshot_binary' % version.id, action.get('url'))
+        self.assertIn('download=false', action.get('url'))

@@ -258,6 +258,31 @@ class GxpSheetVersion(models.Model):
             }
         raise UserError('No hay archivo Excel cargado ni contenido web para exportar.')
 
+
+    def action_open_pdf_preview(self):
+        self.ensure_one()
+        if self.pdf_snapshot_binary:
+            self._gxp_log_event('download', reason='Previsualización PDF embebida')
+            return {
+                'type': 'ir.actions.act_url',
+                'url': '/web/content/gxp.sheet.version/%s/pdf_snapshot_binary/%s?download=false' % (
+                    self.id,
+                    (self.file_name or 'snapshot') + '.pdf',
+                ),
+                'target': 'new',
+            }
+        if self.file_binary and (self.file_mimetype or '').lower() == 'application/pdf':
+            self._gxp_log_event('download', reason='Previsualización PDF embebida (archivo principal)')
+            return {
+                'type': 'ir.actions.act_url',
+                'url': '/web/content/gxp.sheet.version/%s/file_binary/%s?download=false' % (
+                    self.id,
+                    self.file_name or 'documento.pdf',
+                ),
+                'target': 'new',
+            }
+        raise UserError('No hay PDF disponible para vista embebida. Cargue pdf_snapshot_binary o un archivo PDF.')
+
     def action_download_controlled(self):
         self._gxp_log_event('download', reason='Controlled download')
         return True

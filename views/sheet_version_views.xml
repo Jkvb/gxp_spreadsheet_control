@@ -24,6 +24,7 @@
                     <button name="action_make_effective" type="object" string="Hacer vigente" states="pending_approval"/>
                     <button name="action_open_sign_wizard_approval" type="object" string="Firmar aprobación" states="pending_approval" class="btn-secondary"/>
                     <button name="action_open_excel" type="object" string="Abrir Excel" class="btn-primary"/>
+                    <button name="action_open_pdf_preview" type="object" string="Ver PDF embebido" class="btn-secondary"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,in_review,pending_approval,effective,superseded,retired,cancelled"/>
                 </header>
                 <sheet>
@@ -35,6 +36,7 @@
                         <field name="web_edit_mode"/>
                         <field name="file_name"/>
                         <field name="file_binary" filename="file_name"/>
+                        <field name="pdf_snapshot_binary" filename="file_name"/>
                         <field name="file_sha256" readonly="1"/>
                         <field name="change_summary"/>
                         <field name="is_locked" readonly="1"/>

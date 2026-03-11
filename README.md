@@ -99,6 +99,7 @@ Si `use_chatter_audit` está activo en la hoja:
 
 - Vista Kanban “canvas” para hoja controlada con indicadores visuales.
 - Formulario con panel chatter.
+- Apertura embebida de PDF (snapshot) tipo visor documental desde la versión.
 - Catálogos operativos para proceso de negocio, tipo de registro y predicate rules.
 
 ---
