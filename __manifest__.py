@@ -11,6 +11,7 @@
         'security/ir.model.access.csv',
         'data/sequence.xml',
         'data/cron.xml',
+        'data/catalog_data.xml',
         'views/controlled_sheet_views.xml',
         'views/sheet_version_views.xml',
         'views/validation_views.xml',

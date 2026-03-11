@@ -175,3 +175,19 @@ class TestGxpSpreadsheetControl(SavepointCase):
         })
         wizard.action_sign()
         self.assertFalse(version.is_locked)
+
+
+    def test_sheet_can_link_catalogs(self):
+        bp = self.env['gxp.catalog.business.process'].create({'name': 'BP', 'code': 'BP-T'})
+        rt = self.env['gxp.catalog.record.type'].create({'name': 'RT', 'code': 'RT-T'})
+        pr = self.env['gxp.catalog.predicate.rule'].create({'name': 'PR', 'code': 'PR-T'})
+        sheet = self.sheet_model.create({
+            'name': 'Catalog linked sheet',
+            'intended_use': 'Regulated calc',
+            'business_process_id': bp.id,
+            'record_type_id': rt.id,
+            'predicate_rule_id': pr.id,
+        })
+        self.assertEqual(sheet.business_process_id.id, bp.id)
+        self.assertEqual(sheet.record_type_id.id, rt.id)
+        self.assertEqual(sheet.predicate_rule_id.id, pr.id)

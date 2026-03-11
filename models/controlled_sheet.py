@@ -83,11 +83,23 @@ class GxpControlledSheet(models.Model):
                 '<div class="gxp-canvas">'
                 '<div class="gxp-pill">Estado: %s</div>'
                 '<div class="gxp-pill">Versión vigente: %s</div>'
+                '<div class="gxp-pill">Proceso: %s</div>'
+                '<div class="gxp-pill">Tipo: %s</div>'
+                '<div class="gxp-pill">Regla: %s</div>'
                 '<div class="gxp-pill">Próxima revisión: %s</div>'
                 '<div class="gxp-progress"><span style="width:%s%%"></span></div>'
                 '<p><strong>Tip:</strong> %s</p>'
                 '</div>'
-            ) % (rec.status, version, rec.next_review_date or 'No programada', score, hint)
+            ) % (
+                rec.status,
+                version,
+                rec.business_process_id.code or 'N/A',
+                rec.record_type_id.code or 'N/A',
+                rec.predicate_rule_id.code or 'N/A',
+                rec.next_review_date or 'No programada',
+                score,
+                hint,
+            )
 
     def unlink(self):
         raise UserError('Regulated records cannot be deleted; archive them instead.')
